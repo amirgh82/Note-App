@@ -6,32 +6,49 @@ const addBox = $.querySelector('.add-box'),
     popupClose = $.querySelector('header i'),
     inputElem = $.querySelector('input'),
     textareaElem = $.querySelector('textarea'),
-    buttonElem = $.querySelector('button')
+    buttonElem = $.querySelector('button'),
+    wrapperElem = $.querySelector('.wrapper'),
+    settings = $.querySelector('.settings')
 
 let isUpdate = false
 
 let notes = []
 
-addBox.addEventListener('click', () => {
-
-    if (isUpdate) {
-        popupTitle.innerHTML = 'Update main note '
-        buttonElem.innerHTML = "Update note"
-    } else {
-        popupTitle.innerHTML = 'Add a new note '
-        buttonElem.innerHTML = "Add note"
-    }
-
-    popupBox.classList.add('show')
-    inputElem.focus()
-})
-
-popupClose.addEventListener('click', () => {
-    popupBox.classList.remove('show')
-})
-
 function generateNotes(notes) {
 
+    $.querySelectorAll('.note').forEach(note => note.remove())
+
+
+    notes.forEach((note) => {
+        wrapperElem.insertAdjacentHTML('beforeend', `<li class="note">
+        <div class="details">
+            <p>${note.title}</p>
+            <span>${note.description}</span>
+        </div>
+        <div class="bottom-content">
+            <span>${note.date}</span>
+            <div class="settings">
+                <i class="uil uil-ellipsis-h" onclick="showSetting(this)"></i>
+                <ul class="menu">
+                    <li>
+                        <i class="uil uil-pen"></i>Edit
+                    </li>
+                    <li>
+                        <i class="uil uil-trash"></i>Delete
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </li>`)
+    })
+}
+
+function setNotesInLocalStoreg(notes) {
+    localStorage.setItem('notes', JSON.stringify(notes))
+}
+
+function showSetting(element) {
+    element.parentElement.classList.add('show')
 }
 
 function getLocalStorageNotes() {
@@ -47,9 +64,55 @@ function getLocalStorageNotes() {
 
 }
 
+addBox.addEventListener('click', () => {
+
+    if (isUpdate) {
+        popupTitle.innerHTML = 'Update main note '
+        buttonElem.innerHTML = "Update note"
+    } else {
+        popupTitle.innerHTML = 'Add a new note '
+        buttonElem.innerHTML = "Add note"
+    }
+
+
+    popupBox.classList.add('show')
+    inputElem.focus()
+})
+
+popupClose.addEventListener('click', () => {
+    popupBox.classList.remove('show')
+
+})
+
 window.addEventListener('load', () => {
     let notes = getLocalStorageNotes()
 
     generateNotes(notes)
 
+})
+
+window.addEventListener('keyup', (event) => {
+    if (event.keyCode === 27) {
+        popupBox.classList.remove('show')
+    }
+})
+
+buttonElem.addEventListener('click', (event) => {
+    event.preventDefault()
+    let newNote = {
+        id: notes.length + 1,
+        title: inputElem.value,
+        description: textareaElem.value,
+        date: 'April 12 2023'
+    }
+
+    notes.push(newNote)
+
+    setNotesInLocalStoreg(notes)
+    generateNotes(notes)
+
+
+    inputElem.value = ''
+    textareaElem.value = ''
+    popupBox.classList.remove('show')
 })
