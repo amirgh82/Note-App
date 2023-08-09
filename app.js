@@ -10,9 +10,19 @@ const addBox = $.querySelector('.add-box'),
     wrapperElem = $.querySelector('.wrapper'),
     settings = $.querySelector('.settings')
 
+
+
+
+
 let isUpdate = false
 
+
+
+
 let notes = []
+
+
+
 
 function generateNotes(notes) {
 
@@ -43,13 +53,24 @@ function generateNotes(notes) {
     })
 }
 
+
+
+
+
 function setNotesInLocalStoreg(notes) {
     localStorage.setItem('notes', JSON.stringify(notes))
 }
 
+
+
+
+
 function showSetting(element) {
     element.parentElement.classList.add('show')
 }
+
+
+
 
 function getLocalStorageNotes() {
     let localStorageNotes = localStorage.getItem('notes')
@@ -64,6 +85,10 @@ function getLocalStorageNotes() {
 
 }
 
+
+
+
+
 addBox.addEventListener('click', () => {
 
     if (isUpdate) {
@@ -74,22 +99,33 @@ addBox.addEventListener('click', () => {
         buttonElem.innerHTML = "Add note"
     }
 
-
     popupBox.classList.add('show')
     inputElem.focus()
 })
 
+
+
+
+
+
 popupClose.addEventListener('click', () => {
     popupBox.classList.remove('show')
-
 })
+
+
+
+
+
 
 window.addEventListener('load', () => {
     let notes = getLocalStorageNotes()
 
     generateNotes(notes)
-
 })
+
+
+
+
 
 window.addEventListener('keyup', (event) => {
     if (event.keyCode === 27) {
@@ -97,13 +133,17 @@ window.addEventListener('keyup', (event) => {
     }
 })
 
+
+
+
+
 buttonElem.addEventListener('click', (event) => {
     event.preventDefault()
     let newNote = {
         id: notes.length + 1,
         title: inputElem.value,
         description: textareaElem.value,
-        date: 'April 12 2023'
+        date: getNowDate()
     }
 
     notes.push(newNote)
@@ -111,8 +151,24 @@ buttonElem.addEventListener('click', (event) => {
     setNotesInLocalStoreg(notes)
     generateNotes(notes)
 
-
     inputElem.value = ''
     textareaElem.value = ''
     popupBox.classList.remove('show')
 })
+
+
+function getNowDate() {
+    let now = new Date()
+
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+    let nowDay = now.getDay()
+    let nowMonth = now.getMonth()
+    let nowYear = now.getFullYear()
+    let dayOfMonth = now.getDate()
+    let hours = now.getHours()
+    let minuts = now.getMinutes()
+
+    return `${months[nowMonth]} ${dayOfMonth} , ${nowYear} (${days[nowDay]}) - ${hours}:${minuts}`
+}
