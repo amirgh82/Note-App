@@ -8,3 +8,19 @@ const addBox = $.querySelector('.add-box'),
     textareaElem = $.querySelector('textarea'),
     buttonElem = $.querySelector('button')
 
+    let notes = []
+
+    function getLocalStorageNotes() {
+        let localStorageNotes = localStorage.getItem('notes')
+    
+        if (localStorageNotes) {
+            notes = JSON.parse(localStorageNotes)
+        } else {
+            notes = []
+        }
+    
+        return notes
+    
+    }
+    
+    
