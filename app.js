@@ -9,34 +9,59 @@ const addBox = $.querySelector('.add-box'),
     wrapperElem = $.querySelector('.wrapper')
 
 let isUpdate = false
+let updateID = null
 
 let notes = []
 
-addBox.addEventListener('click', () => {
+addBox.addEventListener('click', showModal)
 
+function showModal(noteID, noteTitle, noteDesc) {
     if (isUpdate) {
         popupTitle.innerHTML = 'Update main note'
         buttonElem.innerHTML = 'Update Note'
+        inputElem.value = noteTitle
+        textareaElem.value = noteDesc
     } else {
         popupTitle.innerHTML = 'Add a new note'
         buttonElem.innerHTML = 'Add Note'
     }
     inputElem.focus()
     popupBox.classList.add('show')
-})
+}
 
 buttonElem.addEventListener('click', () => {
-    let newNote = {
-        title: inputElem.value,
-        description: textareaElem.value,
-        date: getNowDate()
-    }
 
-    notes.push(newNote)
-    setNotesInLocalStorage(notes)
-    closeModal()
-    generateNotes(notes)
-    clearInputs()
+    if (isUpdate) {
+
+        let allNotes = getLocalStorageNotes()
+
+        allNotes.some((note, index) => {
+            if (index === updateID) {
+                note.title = inputElem.value
+                note.description = textareaElem.value
+            }
+        })
+
+        setNotesInLocalStorage(allNotes)
+        generateNotes(allNotes)
+        closeModal()
+        clearInputs()
+
+        isUpdate = false
+    } else {
+        let newNote = {
+            id: notes.length + 1,
+            title: inputElem.value,
+            description: textareaElem.value,
+            date: getNowDate()
+        }
+
+        notes.push(newNote)
+        setNotesInLocalStorage(notes)
+        closeModal()
+        generateNotes(notes)
+        clearInputs()
+    }
 
 })
 
@@ -79,7 +104,7 @@ function generateNotes(notes) {
           <div class="settings">
             <i class="uil uil-ellipsis-h" onclick="showSetting(this)"></i>
             <ul class="menu">
-              <li>
+              <li onclick="editNote(${index} , '${note.title}' , '${note.description}')">
                 <i class="uil uil-pen"></i>Edit
               </li>
               <li onclick="removeNote(${index})">
@@ -104,6 +129,18 @@ function removeNote(noteIndex) {
         setNotesInLocalStorage(newNotes)
         generateNotes(newNotes)
     }
+}
+
+function editNote(noteID, noteTitle, noteDesc) {
+
+    isUpdate = true
+
+    showModal(noteID, noteTitle, noteDesc)
+
+    let allNotes = getLocalStorageNotes()
+
+    updateID = noteID
+
 }
 
 function showSetting(el) {
